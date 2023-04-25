@@ -15,6 +15,8 @@ class Level:
         # sprite group
         self.visible_sprites = YSortCameraGroup()
         self.obstacle_sprites = pygame.sprite.Group()
+        # attack sprites
+        self.current_attack = None
         # sprite setup
         self.create_map()
 
@@ -35,7 +37,7 @@ class Level:
                         x = col_index * TILESIZE
                         y = row_index * TILESIZE
                         if style == "boundary":
-                            Tile((x, y), [self.obstacle_sprites],"invisible")
+                            Tile((x, y), [self.obstacle_sprites], "invisible")
                         if style == "grass":
                             # create grass
                             random_grass_image = choice(graphics["grass"])
@@ -45,10 +47,16 @@ class Level:
                             surf = graphics["objects"][int(col)]
                             Tile((x, y), [self.visible_sprites, self.obstacle_sprites], "object", surf)
 
-        self.player = Player((2000, 1430), [self.visible_sprites], self.obstacle_sprites, self.create_attack)
+        self.player = Player((2000, 1430), [self.visible_sprites], self.obstacle_sprites, self.create_attack,
+                             self.destroy_attack)
 
     def create_attack(self):
-        Weapon(self.player, [self.visible_sprites])
+        self.current_attack = Weapon(self.player, [self.visible_sprites])
+
+    def destroy_attack(self):
+        if self.current_attack:
+            self.current_attack.kill()
+        self.current_attack = None
 
     def run(self):
         # update and draw the game
