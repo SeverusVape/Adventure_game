@@ -6,6 +6,7 @@ from debug import debug
 from support import *
 from random import choice
 from weapon import Weapon
+from ui import UI
 
 
 class Level:
@@ -19,6 +20,8 @@ class Level:
         self.current_attack = None
         # sprite setup
         self.create_map()
+        # user interface
+        self.ui = UI()
 
     def create_map(self):
         layouts = {
@@ -62,6 +65,7 @@ class Level:
         # update and draw the game
         self.visible_sprites.custom_draw(self.player)
         self.visible_sprites.update()
+        self.ui.display(self.player)
         # debug and testing info
         # debug(self.player.status)
 
