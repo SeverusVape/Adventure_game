@@ -7,6 +7,7 @@ from support import *
 from random import choice
 from weapon import Weapon
 from ui import UI
+from enemy import Enemy
 
 
 class Level:
@@ -27,7 +28,8 @@ class Level:
         layouts = {
             "boundary": import_csv_layout("../map/map_FloorBlocks.csv"),
             "grass": import_csv_layout("../map/map_Grass.csv"),
-            "object": import_csv_layout("../map/map_Objects.csv")
+            "object": import_csv_layout("../map/map_Objects.csv"),
+            "entities": import_csv_layout("../map/map_Entities.csv")
         }
         graphics = {
             "grass": import_folder("../graphics/grass"),
@@ -49,15 +51,28 @@ class Level:
                             # create objects
                             surf = graphics["objects"][int(col)]
                             Tile((x, y), [self.visible_sprites, self.obstacle_sprites], "object", surf)
+                        if style == "entities":
+                            # enemies
+                            if col == "394":
+                                self.player = Player(
+                                    (x, y),
+                                    [self.visible_sprites],
+                                    self.obstacle_sprites,
+                                    self.create_attack,
+                                    self.destroy_attack,
+                                    self.create_magic
+                                )
+                            else:
+                                if col == "390":
+                                    monster_name = "bamboo"
+                                elif col == "391":
+                                    monster_name = "spirit"
+                                elif col == "392":
+                                    monster_name = "raccoon"
+                                else:
+                                    monster_name = "squid"
 
-        self.player = Player(
-            (2000, 1430),
-            [self.visible_sprites],
-            self.obstacle_sprites,
-            self.create_attack,
-            self.destroy_attack,
-            self.create_magic
-            )
+                                Enemy(monster_name, (x, y), [self.visible_sprites])
 
     def create_attack(self):
         self.current_attack = Weapon(self.player, [self.visible_sprites])
