@@ -10,6 +10,10 @@ class Upgrade:
         self.attribute_nr = len(player.stats)
         self.attribute_names = list(player.stats.keys())
         self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
+        # item dimensions
+        self.height = self.display_surface.get_size()[1] * 0.8
+        self.width = self.display_surface.get_size()[0] // 6
+        self.create_items()
         # selection system
         self.selection_index = 0
         self.selection_time = None
@@ -18,6 +22,9 @@ class Upgrade:
     def display(self):
         self.input()
         self.selection_cooldown()
+
+        for item in self.item_list:
+            item.display(self.display_surface, 0, "test", 1, 2, 3)
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -41,3 +48,27 @@ class Upgrade:
             current_time = pygame.time.get_ticks()
             if current_time - self.selection_time >= 300:
                 self.can_move = True
+
+    def create_items(self):
+        self.item_list = []
+
+        for item, index in enumerate(range(self.attribute_nr)):
+            # vertical
+            top = self.display_surface.get_size()[1] * 0.1
+            # horizontal
+            full_width = self.display_surface.get_size()[0]
+            increment = full_width // self.attribute_nr
+            left = (item * increment) + (increment - self.width) // 2
+
+            item = Item(left, top, self.width, self.height, index, self.font)
+            self.item_list.append(item)
+
+
+class Item:
+    def __init__(self, l, t, w, h, index, font):
+        self.rect = pygame.Rect(l, t, w, h)
+        self.index = index
+        self.font = font
+
+    def display(self, surface, selection_num, name, value, max_value, cost):
+        pygame.draw.rect(surface, UI_BG_COLOR, self.rect)
